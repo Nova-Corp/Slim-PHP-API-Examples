@@ -17,6 +17,10 @@ $app->group('/books', function ($app){
     $app->get('', 'BooksController:listAllBooks');
     $app->get('/{id}', 'BooksController:retriveBook');
     $app->get('/author/{id}', 'BooksController:retriveBookForAuthor');
+
+    $app->post('', 'BooksController:storeBooks');
+    $app->post('/{id}', 'BooksController:updateBooks');
+    $app->delete('/{id}', 'BooksController:deleteBooks');
 });
 
 $app->get('/authors', 'BooksController:listAuthors');

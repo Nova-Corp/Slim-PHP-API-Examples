@@ -66,4 +66,39 @@ class BooksController extends Helper
 		->first();
 		return $this->toJSON($response, $book, 200);
 	}
+
+	public function storeBooks(Request $request, Response $response, $args)
+	{
+		$data = $request->getParsedBody();
+		$sanitized = [
+			'name' => $data['name'],
+			'author' => $data['author']==''?null: $data['author'],
+			'genere' => $data['genere'],
+		];
+		Books::create($sanitized);
+		return $this->toJSON($response, 'Success', 200);
+	}
+
+	public function updateBooks(Request $request, Response $response, $args)
+	{
+		$data = $request->getParsedBody();
+		$id = $args['id'];
+		$sanitized = [
+			'name' => $data['name'],
+			'author' => $data['author'] == '' ? null : $data['author'],
+			'genere' => $data['genere'],
+		];
+		Books::where('id', $id)->update($sanitized);
+		return $this->toJSON($response, 'Success', 200);
+	}
+
+	public function deleteBooks(Request $request, Response $response, $args)
+	{
+		$id = $args['id'];
+		if (Books::where('id', $id)->delete()) {
+			return $this->toJSON($response, 'Success', 200);
+		}else{
+			return $this->toJSON($response, 'Failed', 200);
+		}
+	}
 }
