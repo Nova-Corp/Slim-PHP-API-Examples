@@ -9,6 +9,11 @@ $app->get('/', function (Request $request, Response $response) {
     return $response;
 });
 
+$container = $app->getContainer();
+
+$container->set('BooksController', new \App\Controllers\BooksController);
+$container->set('AuthorsController', new \App\Controllers\AuthorsController);
+
 /*
 	All books and details would be listed here.
 */
@@ -18,9 +23,16 @@ $app->group('/books', function ($app){
     $app->get('/{id}', 'BooksController:retriveBook');
     $app->get('/author/{id}', 'BooksController:retriveBookForAuthor');
 
-    $app->post('', 'BooksController:storeBooks');
+    $app->post('', 'BooksController:createBooks');
     $app->post('/{id}', 'BooksController:updateBooks');
     $app->delete('/{id}', 'BooksController:deleteBooks');
 });
 
-$app->get('/authors', 'BooksController:listAuthors');
+$app->group('/authors', function ($app) {
+    $app->get('', 'AuthorsController:listAuthors');
+    $app->get('/{id}', 'AuthorsController:retriveAuthor');
+
+    $app->post('', 'AuthorsController:createAuthor');
+    $app->post('/{id}', 'AuthorsController:updateAuthor');
+    $app->delete('/{id}', 'AuthorsController:deleteAuthor');
+});

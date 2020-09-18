@@ -7,10 +7,6 @@ require __DIR__ . '/../vendor/autoload.php';
 // Instantiate PHP-DI ContainerBuilder
 $containerBuilder = new ContainerBuilder();
 
-$containerBuilder->addDefinitions([
-	'BooksController' => new \App\Controllers\BooksController
-]);
-
 // Set up settings
 $settings = require __DIR__ . '/../app/settings.php';
 $settings($containerBuilder);

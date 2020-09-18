@@ -11,7 +11,6 @@ use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 
 use App\Helpers\Helper;
-use App\Models\DatabaseSchema\Authors;
 
 class BooksController extends Helper
 {
@@ -27,12 +26,6 @@ class BooksController extends Helper
 		)
 		->get();
 		return $this->toJSON($response, $all_books, 200);
-	}
-
-	public function listAuthors(Request $request, Response $response)
-	{
-		$all_authors = Authors::get();
-		return $this->toJSON($response, $all_authors, 200);
 	}
 
 	public function retriveBook(Request $request, Response $response, $args)
@@ -67,7 +60,7 @@ class BooksController extends Helper
 		return $this->toJSON($response, $book, 200);
 	}
 
-	public function storeBooks(Request $request, Response $response, $args)
+	public function createBooks(Request $request, Response $response, $args)
 	{
 		$data = $request->getParsedBody();
 		$sanitized = [
