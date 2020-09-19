@@ -18,6 +18,7 @@ AppFactory::setContainer($container);
 $app = AppFactory::create();
 
 $app->addErrorMiddleware($container->get('settings')['displayErrorDetails'], true, true);
+$app->addBodyParsingMiddleware();
 
 $capsule = new Illuminate\Database\Capsule\Manager;
 $capsule->addConnection($container->get('settings')['db']);

@@ -1,76 +1,75 @@
 <?php
-
 /*
-    AuthorsController.php
+    GeneresController.php
 */
 
 namespace App\Controllers;
 
 use App\Helpers\Helper;
-use App\Models\DatabaseSchema\Authors;
+use App\Models\DatabaseSchema\Generes;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 
-class AuthorsController extends Helper
+class GeneresController extends Helper
 {
-    public function authorList(Request $request, Response $response)
+    public function genereList(Request $request, Response $response)
     {
-        $all_authors = Authors::get();
+        $all_generes = Generes::get();
         return $this->toJSON($response, [
             'status' => true,
-            'message' => $all_authors
+            'message' => $all_generes
         ], 200);
     }
 
-    public function retriveAuthor(Request $request, Response $response, $args)
+    public function retriveGenere(Request $request, Response $response, $args)
     {
         $id = $args['id'];
-        $author = Authors::where('id', $id)->first();
+        $genere = Generes::where('id', $id)->first();
         return $this->toJSON($response, [
             'status' => true,
-            'message' => $author
+            'message' => $genere
         ], 200);
     }
 
-    public function createAuthor(Request $request, Response $response, $args)
+    public function createGenere(Request $request, Response $response, $args)
     {
         $data = $request->getParsedBody();
         $sanitized = [
-            'name' => $data['name']
+            'type' => $data['type']
         ];
-        Authors::create($sanitized);
+        Generes::create($sanitized);
         return $this->toJSON($response, [
             'status' => true,
             'message' => 'Successfully created.'
         ], 200);
     }
 
-    public function updateAuthor(Request $request, Response $response, $args)
+    public function updateGenere(Request $request, Response $response, $args)
     {
         $data = $request->getParsedBody();
         $id = $args['id'];
         $sanitized = [
-            'name' => $data['name']
+            'type' => $data['type']
         ];
-        Authors::where('id', $id)->update($sanitized);
+        Generes::where('id', $id)->update($sanitized);
         return $this->toJSON($response, [
             'status' => true,
             'message' => 'Successfully updated.'
         ], 200);
     }
 
-    public function deleteAuthor(Request $request, Response $response, $args)
+    public function deleteGenere(Request $request, Response $response, $args)
     {
         $id = $args['id'];
-        if (Authors::where('id', $id)->delete()) {
+        if (Generes::where('id', $id)->delete()) {
             return $this->toJSON($response, [
                 'status' => true,
                 'message' => 'Successfully deleted.'
             ], 200);
         } else {
             return $this->toJSON($response, [
-                'status' => false,
-                'message' => 'Not Found.'
+                'status' => true,
+                'message' => 'Not found.'
             ], 200);
         }
     }
