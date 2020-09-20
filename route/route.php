@@ -9,8 +9,6 @@ $app->get('/', function (Request $request, Response $response) {
     return $response;
 });
 
-$container = $app->getContainer();
-
 $container->set('BooksController', new \App\Controllers\BooksController);
 $container->set('AuthorsController', new \App\Controllers\AuthorsController);
 $container->set('GeneresController', new \App\Controllers\GeneresController);
@@ -63,8 +61,7 @@ $app->group('/sales', function ($app) {
 });
 
 $app->group('/users', function ($app) {
-    $app->post('', 'UsersController:createUser');
+    $app->post('/create', 'UsersController:createUser');
     $app->post('/login', 'UsersController:loginUser');
 
-    // $app->get('/{id}', 'SalesController:retriveStock');
 });

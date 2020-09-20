@@ -59,11 +59,25 @@ class UsersController extends Helper
                 'password' => password_hash($data['password'], PASSWORD_DEFAULT),
                 'is_admin' => $data['is_admin'],
             ];
-            Users::create($sanitized);
-            return $this->toJSON($response, [
-                'status' => true,
-                'message' => 'Successfully created.'
-            ], 200);
+            try {
+                Users::create($sanitized);
+                return $this->toJSON($response, [
+                    'status' => true,
+                    'message' => 'Successfully created.'
+                ], 200);
+            } catch (\Throwable $error) {
+                if ($error->errorInfo[1] == 1062) {
+                    return $this->toJSON($response, [
+                        'status' => true,
+                        'message' => 'This email already registered.'
+                    ], 200);
+                } else {
+                    return $this->toJSON($response, [
+                        'status' => true,
+                        'message' => $error->errorInfo[2]
+                    ], 200);
+                }
+            }
         } else {
             $errors = $validator->getErrors();
             foreach ($errors as $error) {
@@ -78,16 +92,16 @@ class UsersController extends Helper
     public function loginUser(Request $request, Response $response)
     {
         $rules =
-        [
-            'email' => [
-                'rules' => V::length(6)->email(),
-                'message' => 'Please enter valid email.'
-            ],
-            'password' => [
-                'rules' => V::length(6, 25)->noWhitespace()->stringType(),
-                'message' => 'Password should contain 6 digit alpha numeric.'
-            ]
-        ];
+            [
+                'email' => [
+                    'rules' => V::length(6)->email(),
+                    'message' => 'Please enter valid email.'
+                ],
+                'password' => [
+                    'rules' => V::length(6, 25)->noWhitespace()->stringType(),
+                    'message' => 'Password should contain 6 digit alpha numeric.'
+                ]
+            ];
 
         $val = new Validator();
         $validator = $val->validate($request, $rules);
@@ -96,10 +110,12 @@ class UsersController extends Helper
             $data = $request->getParsedBody();
             $user = Users::where('email', $data['email']);
             if (password_verify($data['password'], $user->value('password'))) {
+                $token = $this->generateToken($data);
                 return $this->toJSON($response, [
                     'status' => true,
                     'message' => 'Successfully loggedin.',
-                    'is_admin' => $user->value('is_admin')
+                    'is_admin' => $user->value('is_admin'),
+                    'token' => $token
                 ], 200);
             } else {
                 return $this->toJSON($response, [

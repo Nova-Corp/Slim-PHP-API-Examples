@@ -25,5 +25,10 @@ return function (ContainerBuilder $containerBuilder) {
                 'prefix'    => '',
             ]
         ],
+        'basic' => [
+            'username' => 'user@shancloud',
+            'password' => 'shan@cloud'
+        ],
+        'secret' => 'Wellpr0tecTedSecreKEy.'
     ]);
 };

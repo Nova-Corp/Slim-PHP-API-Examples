@@ -1,6 +1,11 @@
 <?php
 use Slim\Factory\AppFactory;
 use DI\ContainerBuilder;
+use Psr\Http\Message\ResponseInterface as Response;
+use Psr\Http\Message\ServerRequestInterface as Request;
+
+// use Psr\Http\Message\ResponseInterface as Response;
+// use Psr\Http\Message\ServerRequestInterface as Request;
 
 require __DIR__ . '/../vendor/autoload.php';
 
@@ -19,6 +24,8 @@ $app = AppFactory::create();
 
 $app->addErrorMiddleware($container->get('settings')['displayErrorDetails'], true, true);
 $app->addBodyParsingMiddleware();
+
+include __DIR__ . '/../app/Middleware/Middleware.php';
 
 $capsule = new Illuminate\Database\Capsule\Manager;
 $capsule->addConnection($container->get('settings')['db']);
