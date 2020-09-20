@@ -4,8 +4,63 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "16112dd9eff85426b16d086039367bff",
+    "content-hash": "65ed00a4e5ceb75b4c2251a795dbcf51",
     "packages": [
+        {
+            "name": "awurth/slim-validation",
+            "version": "3.3.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/awurth/SlimValidation.git",
+                "reference": "c38f7b54767c79a4f031d99a486967f49f0518e7"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/awurth/SlimValidation/zipball/c38f7b54767c79a4f031d99a486967f49f0518e7",
+                "reference": "c38f7b54767c79a4f031d99a486967f49f0518e7",
+                "shasum": ""
+            },
+            "require": {
+                "php": "^7.0",
+                "psr/http-message": "^1.0",
+                "respect/validation": "^1.1"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "^6.3",
+                "slim/slim": "^3.8",
+                "slim/twig-view": "^2.2"
+            },
+            "suggest": {
+                "slim/twig-view": "Needed to be able to use the Twig Extension with Slim",
+                "twig/twig": "Needed to be able to use the Twig Extension"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Awurth\\SlimValidation\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Alexis Wurth",
+                    "email": "awurth.dev@gmail.com",
+                    "homepage": "https://github.com/awurth"
+                }
+            ],
+            "description": "A validator for the Slim PHP Micro-Framework",
+            "homepage": "https://github.com/awurth/SlimValidation",
+            "keywords": [
+                "respect",
+                "slim",
+                "validation",
+                "validator"
+            ],
+            "time": "2020-04-10T19:40:51+00:00"
+        },
         {
             "name": "doctrine/inflector",
             "version": "1.4.3",
@@ -683,16 +738,16 @@
         },
         {
             "name": "nesbot/carbon",
-            "version": "2.39.2",
+            "version": "2.40.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/briannesbitt/Carbon.git",
-                "reference": "326efde1bc09077a26cb77f6e2e32e13f06c27f2"
+                "reference": "6c7646154181013ecd55e80c201b9fd873c6ee5d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/briannesbitt/Carbon/zipball/326efde1bc09077a26cb77f6e2e32e13f06c27f2",
-                "reference": "326efde1bc09077a26cb77f6e2e32e13f06c27f2",
+                "url": "https://api.github.com/repos/briannesbitt/Carbon/zipball/6c7646154181013ecd55e80c201b9fd873c6ee5d",
+                "reference": "6c7646154181013ecd55e80c201b9fd873c6ee5d",
                 "shasum": ""
             },
             "require": {
@@ -758,7 +813,7 @@
                 "datetime",
                 "time"
             ],
-            "time": "2020-09-10T12:16:42+00:00"
+            "time": "2020-09-11T19:00:58+00:00"
         },
         {
             "name": "nikic/fast-route",
@@ -808,20 +863,20 @@
         },
         {
             "name": "nyholm/psr7",
-            "version": "1.3.0",
+            "version": "1.3.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Nyholm/psr7.git",
-                "reference": "c17f4f73985f62054a331cbc4ffdf9868c4ef256"
+                "reference": "21b71a31eab5c0c2caf967b9c0fd97020254ed75"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Nyholm/psr7/zipball/c17f4f73985f62054a331cbc4ffdf9868c4ef256",
-                "reference": "c17f4f73985f62054a331cbc4ffdf9868c4ef256",
+                "url": "https://api.github.com/repos/Nyholm/psr7/zipball/21b71a31eab5c0c2caf967b9c0fd97020254ed75",
+                "reference": "21b71a31eab5c0c2caf967b9c0fd97020254ed75",
                 "shasum": ""
             },
             "require": {
-                "php": "^7.1",
+                "php": ">=7.1",
                 "php-http/message-factory": "^1.0",
                 "psr/http-factory": "^1.0",
                 "psr/http-message": "^1.0"
@@ -867,7 +922,7 @@
                 "psr-17",
                 "psr-7"
             ],
-            "time": "2020-05-23T11:29:07+00:00"
+            "time": "2020-06-13T15:59:10+00:00"
         },
         {
             "name": "nyholm/psr7-server",
@@ -1566,6 +1621,69 @@
             ],
             "description": "A polyfill for getallheaders.",
             "time": "2019-03-08T08:55:37+00:00"
+        },
+        {
+            "name": "respect/validation",
+            "version": "1.1.31",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/Respect/Validation.git",
+                "reference": "45d109fc830644fecc1145200d6351ce4f2769d0"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/Respect/Validation/zipball/45d109fc830644fecc1145200d6351ce4f2769d0",
+                "reference": "45d109fc830644fecc1145200d6351ce4f2769d0",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.4",
+                "symfony/polyfill-mbstring": "^1.2"
+            },
+            "require-dev": {
+                "egulias/email-validator": "~1.2 || ~2.1",
+                "mikey179/vfsstream": "^1.5",
+                "phpunit/phpunit": "~4.0 || ~5.0",
+                "symfony/validator": "~2.6.9",
+                "zendframework/zend-validator": "~2.3"
+            },
+            "suggest": {
+                "egulias/email-validator": "Strict (RFC compliant) email validation",
+                "ext-bcmath": "Arbitrary Precision Mathematics",
+                "ext-mbstring": "Multibyte String Functions",
+                "friendsofphp/php-cs-fixer": "Fix PSR2 and other coding style issues",
+                "symfony/validator": "Use Symfony validator through Respect\\Validation",
+                "zendframework/zend-validator": "Use Zend Framework validator through Respect\\Validation"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "1.1-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Respect\\Validation\\": "library/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "BSD-3-Clause"
+            ],
+            "authors": [
+                {
+                    "name": "Respect/Validation Contributors",
+                    "homepage": "https://github.com/Respect/Validation/graphs/contributors"
+                }
+            ],
+            "description": "The most awesome validation engine ever created for PHP",
+            "homepage": "http://respect.github.io/Validation/",
+            "keywords": [
+                "respect",
+                "validation",
+                "validator"
+            ],
+            "time": "2019-05-28T06:10:06+00:00"
         },
         {
             "name": "slim/psr7",

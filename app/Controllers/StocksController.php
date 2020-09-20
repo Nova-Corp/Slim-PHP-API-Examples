@@ -10,6 +10,9 @@ use App\Models\DatabaseSchema\Stocks;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 
+use Respect\Validation\Validator as V;
+use Awurth\SlimValidation\Validator;
+
 class StocksController extends Helper
 {
     public function stockList(Request $request, Response $response)
@@ -46,23 +49,53 @@ class StocksController extends Helper
             )
             ->where('all_books.id', $id)
             ->first();
-        return $this->toJSON($response, [
-            'status' => true,
-            'message' => $book
-        ], 200);
+
+        if (!is_null($book)) {
+            return $this->toJSON($response, [
+                'status' => true,
+                'message' => $book
+            ], 200);
+        } else {
+            return $this->toJSON($response, [
+                'status' => true,
+                'message' => 'Product not found.'
+            ], 200);
+        }
     }
 
     public function updateStock(Request $request, Response $response, $args)
     {
-        $data = $request->getParsedBody();
-        $id = $args['id'];
-        $sanitized = [
-            'quantity' => $data['quantity']
+
+        $rules =
+        [
+            'name' => [
+                'rules' => V::stringType()->notEmpty(),
+                'message' => 'Please enter the author name.'
+            ]
         ];
-        Stocks::where('product_id', $id)->update($sanitized);
-        return $this->toJSON($response, [
-            'status' => true,
-            'message' => 'Successfully stock updated.'
-        ], 200);
+
+        $val = new Validator();
+        $validator = $val->validate($request, $rules);
+
+        if ($validator->isValid()) {
+            $data = $request->getParsedBody();
+            $id = $args['id'];
+            $sanitized = [
+                'quantity' => $data['quantity']
+            ];
+            Stocks::where('product_id', $id)->update($sanitized);
+            return $this->toJSON($response, [
+                'status' => true,
+                'message' => 'Successfully stock updated.'
+            ], 200);
+        }else {
+            $errors = $validator->getErrors();
+            foreach ($errors as $error) {
+                return $this->toJSON($response, [
+                    'status' => false,
+                    'message' => $error[0]
+                ], 401);
+            }
+        }
     }
 }

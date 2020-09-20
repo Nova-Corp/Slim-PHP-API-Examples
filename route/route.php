@@ -16,6 +16,7 @@ $container->set('AuthorsController', new \App\Controllers\AuthorsController);
 $container->set('GeneresController', new \App\Controllers\GeneresController);
 $container->set('StocksController', new \App\Controllers\StocksController);
 $container->set('SalesController', new \App\Controllers\SalesController);
+$container->set('UsersController', new \App\Controllers\UsersController);
 
 /*
 	All books and details would be listed here.
@@ -58,5 +59,12 @@ $app->group('/stocks', function ($app) {
 
 $app->group('/sales', function ($app) {
     $app->post('', 'SalesController:createSales');
+    // $app->get('/{id}', 'SalesController:retriveStock');
+});
+
+$app->group('/users', function ($app) {
+    $app->post('', 'UsersController:createUser');
+    $app->post('/login', 'UsersController:loginUser');
+
     // $app->get('/{id}', 'SalesController:retriveStock');
 });
