@@ -9,6 +9,11 @@ use Exception;
 use Firebase\JWT\JWT;
 use Slim\Psr7\UploadedFile;
 
+use Upload\File;
+use Upload\Storage\FileSystem;
+use Upload\Validation\Mimetype;
+use Upload\Validation\Size;
+
 class Helper
 {
 	public $media_path;
@@ -34,26 +39,63 @@ class Helper
 		return JWT::encode($payload, $secret, "HS256");
 	}
 
-	function moveUploadedFile($directory, UploadedFile $uploadedFile)
+	// function moveUploadedFile($directory, UploadedFile $uploadedFile)
+	// {
+	// 	$basename = pathinfo($uploadedFile->getClientFilename(), PATHINFO_FILENAME);
+	// 	$extension = pathinfo($uploadedFile->getClientFilename(), PATHINFO_EXTENSION);
+	// 	$time = time(); // see http://php.net/manual/en/function.random-bytes.php
+	// 	$filename = $basename.'_'. $time.'.'.$extension;
+
+	// 	$uploadedFile->moveTo($directory . DIRECTORY_SEPARATOR . $filename);
+
+	// 	return array('filename'=> $basename . '_' . $time, 'extension' => $extension);
+	// }
+
+	// function validateInputMedia($formatAllowed, $uploadedFile)
+	// {
+	// 	$filename = $uploadedFile->getClientFilename();
+	// 	$ext = pathinfo($filename, PATHINFO_EXTENSION);
+	// 	if (!in_array($ext, $formatAllowed)) {
+	// 		return false;
+	// 	} else {
+	// 		return true;
+	// 	}
+	// }
+
+	function uploadMedia($collectionName, $mimeType, $response)
 	{
-		$basename = pathinfo($uploadedFile->getClientFilename(), PATHINFO_FILENAME);
-		$extension = pathinfo($uploadedFile->getClientFilename(), PATHINFO_EXTENSION);
-		$time = time(); // see http://php.net/manual/en/function.random-bytes.php
-		$filename = $basename.'_'. $time.'.'.$extension;
+		$storage = new \Upload\Storage\FileSystem($this->media_path);
+		$file = new \Upload\File($collectionName, $storage);
 
-		$uploadedFile->moveTo($directory . DIRECTORY_SEPARATOR . $filename);
+		$new_filename = $file->getName().'_'. time();
 
-		return array('filename'=> $basename . '_' . $time, 'extension' => $extension);
-	}
+		$file->setName($new_filename);
 
-	function validateInputMedia($formatAllowed, $uploadedFile)
-	{
-		$filename = $uploadedFile->getClientFilename();
-		$ext = pathinfo($filename, PATHINFO_EXTENSION);
-		if (!in_array($ext, $formatAllowed)) {
-			return false;
-		} else {
-			return true;
+		$file->addValidations(array(
+			// Ensure file is of type "image/png"
+			new Mimetype($mimeType),
+
+			// Ensure file is no larger than 5M (use "B", "K", M", or "G")
+			new Size('2M')
+		));
+
+		try {
+			// Success!
+			$file->upload();
+			return array(
+				'uploaded' => true,
+				'response' => $file
+			);
+		} catch (\Exception $e) {
+			// Fail!
+			$errors = $file->getErrors();
+			return array(
+				'uploaded' => false,
+				'response' => $this->toJSON($response, [
+					'status' => false,
+					'message' => $errors[0]
+				], 401)
+			);
 		}
 	}
 }

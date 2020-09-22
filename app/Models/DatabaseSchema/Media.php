@@ -9,7 +9,6 @@ class Media extends \Illuminate\Database\Eloquent\Model
         'filename',
         'type',
         'row_id',
-        'type',
         'table_name',
         'collection_name'
     ];
