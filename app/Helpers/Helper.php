@@ -5,6 +5,7 @@
  */
 namespace App\Helpers;
 
+use Exception;
 use Firebase\JWT\JWT;
 use Slim\Psr7\UploadedFile;
 
@@ -14,7 +15,7 @@ class Helper
 	
 	function __construct()
 	{
-		$this->media_path = __DIR__ . '/../media';
+		$this->media_path = __DIR__ . '/../../public/media';
 	}
 
 	public function toJSON($response, $content, $status) {
@@ -35,12 +36,24 @@ class Helper
 
 	function moveUploadedFile($directory, UploadedFile $uploadedFile)
 	{
+		$basename = pathinfo($uploadedFile->getClientFilename(), PATHINFO_FILENAME);
 		$extension = pathinfo($uploadedFile->getClientFilename(), PATHINFO_EXTENSION);
-		$basename = bin2hex(random_bytes(8)); // see http://php.net/manual/en/function.random-bytes.php
-		$filename = sprintf('%s.%0.8s', $basename, $extension);
+		$time = time(); // see http://php.net/manual/en/function.random-bytes.php
+		$filename = $basename.'_'. $time.'.'.$extension;
 
 		$uploadedFile->moveTo($directory . DIRECTORY_SEPARATOR . $filename);
 
-		return $filename;
+		return array('filename'=> $basename . '_' . $time, 'extension' => $extension);
+	}
+
+	function validateInputMedia($formatAllowed, $uploadedFile)
+	{
+		$filename = $uploadedFile->getClientFilename();
+		$ext = pathinfo($filename, PATHINFO_EXTENSION);
+		if (!in_array($ext, $formatAllowed)) {
+			return false;
+		} else {
+			return true;
+		}
 	}
 }

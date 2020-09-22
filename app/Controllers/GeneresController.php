@@ -7,6 +7,7 @@ namespace App\Controllers;
 
 use App\Helpers\Helper;
 use App\Models\DatabaseSchema\Generes;
+use App\Models\DatabaseSchema\Media;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 
@@ -21,7 +22,10 @@ class GeneresController extends Helper
 {
     public function genereList(Request $request, Response $response)
     {
-        $all_generes = Generes::get();
+        $all_generes = Generes::join('media', 'media.row_id', '=', 'generes.id', 'full outer')
+        // ->select('generes.*', 'media.filename')
+        // ->where('media.collection_name', 'genere_image')
+        ->get();
         return $this->toJSON($response, [
             'status' => true,
             'message' => $all_generes
@@ -47,24 +51,6 @@ class GeneresController extends Helper
 
     public function createGenere(Request $request, Response $response, $args)
     {
-
-
-        // $uploadedFiles = $request->getUploadedFiles();
-
-        // $uploadedFile = $uploadedFiles['genere_image'];
-        // if ($uploadedFile->getError() === UPLOAD_ERR_OK) {
-        //     $filename = $this->moveUploadedFile($this->media_path, $uploadedFile);
-        //     return $this->toJSON($response, [
-        //         'status' => true,
-        //         'message' => $filename.' successfully created.'
-        //     ], 200);
-        // }else{
-        //     return $this->toJSON($response, [
-        //         'status' => true,
-        //         'message' => 'Not uploaded.'
-        //     ], 200);
-        // }
-
         $rules =
         [
             'type' => [
@@ -76,26 +62,40 @@ class GeneresController extends Helper
         $val = new Validator();
         $validator = $val->validate($request, $rules);
 
-        // $uploadedFiles = $request->getUploadedFiles();
-
-        // if (empty($uploadedFiles['genere_image'])) {
-        //     throw new Exception('Invalid image');
-        // }
-
-        // $uploadedFile = $uploadedFiles['genere_image'];
-
-        // $fileValidationResult = V::image()->validate($uploadedFile->getStream());
-
-        // return $this->toJSON($response, [
-        //     'status' => true,
-        //     'message' => $fileValidationResult
-        // ], 200);
-
         if ($validator->isValid()) {
             $data = $request->getParsedBody();
             $sanitized = [
                 'type' => $data['type']
             ];
+
+            if (isset($request->getUploadedFiles()['genere_image'])) {
+                $uploadedFiles = $request->getUploadedFiles()['genere_image'];
+                $allowed = array('gif', 'png', 'jpg', 'jpeg');
+
+                if (empty($uploadedFiles->getError())) {
+                    if ($this->validateInputMedia($allowed, $uploadedFiles)) {
+                        $genere = Generes::create($sanitized);
+                        $file_info = $this->moveUploadedFile($this->media_path, $uploadedFiles);
+                        Media::create([
+                            'filename' => $file_info['filename'].'.'. $file_info['extension'],
+                            'row_id' => $genere->id,
+                            'type' => $file_info['extension'],
+                            'table_name' => 'generes',
+                            'collection_name' => 'genere_image'
+                        ]);
+                        return $this->toJSON($response, [
+                            'status' => true,
+                            'message' => 'Successfully created.'
+                        ], 200);
+                    } else {
+                        return $this->toJSON($response, [
+                            'status' => false,
+                            'message' => 'Please choose valid image.'
+                        ], 401);
+                    }
+                } 
+            }
+
             Generes::create($sanitized);
             return $this->toJSON($response, [
                 'status' => true,
@@ -151,7 +151,12 @@ class GeneresController extends Helper
     public function deleteGenere(Request $request, Response $response, $args)
     {
         $id = $args['id'];
+        $filename = Media::where('collection_name', 'genere_image')->where('row_id', $id)->value('filename');
         if (Generes::where('id', $id)->delete()) {
+            Media::where('row_id', $id)->delete();
+            if (!is_null($filename)) {
+                unlink($this->media_path . '/' . $filename);
+            }
             return $this->toJSON($response, [
                 'status' => true,
                 'message' => 'Successfully deleted.'

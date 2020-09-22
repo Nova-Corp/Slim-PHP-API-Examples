@@ -11,6 +11,7 @@ class Media extends \Illuminate\Database\Eloquent\Model
         'row_id',
         'type',
         'table_name',
+        'collection_name'
     ];
     public $timestamps = true;
 }
