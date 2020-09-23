@@ -5,7 +5,6 @@
  */
 namespace App\Helpers;
 
-use Exception;
 use Firebase\JWT\JWT;
 use Slim\Psr7\UploadedFile;
 

@@ -13,18 +13,14 @@ use Psr\Http\Message\ServerRequestInterface as Request;
 
 use Respect\Validation\Validator as V;
 use Awurth\SlimValidation\Validator;
-use Exception;
-
-use Psr\Http\Message\UploadedFileInterface;
 
 
 class GeneresController extends Helper
 {
     public function genereList(Request $request, Response $response)
     {
-        $all_generes = Generes::join('media', 'media.row_id', '=', 'generes.id', 'full outer')
-        // ->select('generes.*', 'media.filename')
-        // ->where('media.collection_name', 'genere_image')
+        $all_generes = Generes::leftJoin('media', 'media.row_id', '=', 'generes.id')
+        ->select('generes.*', 'media.filename as image')
         ->get();
         return $this->toJSON($response, [
             'status' => true,
@@ -35,7 +31,10 @@ class GeneresController extends Helper
     public function retriveGenere(Request $request, Response $response, $args)
     {
         $id = $args['id'];
-        $genere = Generes::where('id', $id)->first();
+        $genere = Generes::leftJoin('media', 'media.row_id', '=', 'generes.id')
+        ->select('generes.*', 'media.filename as image')
+        ->where('generes.id', $id)
+        ->first();
         if (!is_null($genere)) {
             return $this->toJSON($response, [
                 'status' => true,
@@ -131,6 +130,55 @@ class GeneresController extends Helper
             $sanitized = [
                 'type' => $data['type']
             ];
+
+            if (isset($request->getUploadedFiles()['genere_image'])) {
+                $uploadedFiles = $request->getUploadedFiles()['genere_image'];
+                $allowed = array('gif', 'png', 'jpg', 'jpeg');
+
+                if (empty($uploadedFiles->getError())) {
+                    if ($this->validateInputMedia($allowed, $uploadedFiles)) {
+                        $genere = Generes::where('id', $id)->update($sanitized);
+                        $file_info = $this->moveUploadedFile($this->media_path, $uploadedFiles);
+
+                        $mediaData = [
+                            'filename' => $file_info['filename'] . '.' . $file_info['extension'],
+                            'row_id' => $id,
+                            'type' => $file_info['extension'],
+                            'table_name' => 'generes',
+                            'collection_name' => 'genere_image'
+                        ];
+
+                        Media::where(function ($query) use ($id, $mediaData) {
+                            $row = $query->where('row_id', $id);
+                            if ($row->exists()) {
+                                unlink($this->media_path . '/' . $row->value('filename'));
+                                $row->update($mediaData);
+                            } else {
+                                $query->create($mediaData);
+                            }
+                        });
+                        return $this->toJSON($response, [
+                            'status' => true,
+                            'message' => 'Successfully updated.'
+                        ], 200);
+
+                    }else {
+                        return $this->toJSON($response, [
+                            'status' => false,
+                            'message' => 'Please choose valid image.'
+                        ], 401);
+                    }
+                } else {
+                    Media::where(function ($query) use ($id) {
+                        $row = $query->where('row_id', $id);
+                        if ($row->exists()) {
+                            unlink($this->media_path . '/' . $row->value('filename'));
+                            $row->delete();
+                        }
+                    });
+                }
+            }
+
             Generes::where('id', $id)->update($sanitized);
             return $this->toJSON($response, [
                 'status' => true,
