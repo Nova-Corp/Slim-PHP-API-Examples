@@ -39,10 +39,6 @@ class GeneresController extends Helper
         ->where('generes.id', $id)
         ->first();
         if (!is_null($generes)) {
-            $generes->image = Media::where('collection_name', 'genere_image')
-            ->where('row_id', $id)
-            ->value('filename');
-
             return $this->toJSON($response, [
                 'status' => true,
                 'message' => $generes
